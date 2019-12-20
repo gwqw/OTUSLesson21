@@ -29,11 +29,11 @@ endif()
 
 # targets and libraries
 set(LIB_NAME async)
-set(EXE_NAME async_exec)
+set(EXE_NAME async_cli)
 if (USE_TEST)
     set(TEST_NAME test_async)
 endif()
-add_library(${LIB_NAME} ${LIB_SOURCE})
+add_library(${LIB_NAME} SHARED ${LIB_SOURCE})
 add_executable(${EXE_NAME} ${EXE_SOURCE})
 if (USE_TEST)
     add_executable(${TEST_NAME} ${TEST_SOURCE})

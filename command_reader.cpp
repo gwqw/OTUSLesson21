@@ -1,7 +1,6 @@
 #include "command_reader.h"
 
 #include <utility>
-#include <ctime>
 #include <string>
 
 using namespace std;
@@ -41,12 +40,12 @@ Command QueueReader::read_next_cmd() {
 
 bool QueueReader::hasCmd() {
     return !buffer_.empty() && !buffer_.front().empty()
-        && buffer_.front().back() == '\n';
+           && buffer_.front().back() == '\n';
 }
 
 bool QueueReader::isCmdComplete() {
-    if (!buffer_.empty() && !buffer_.front().empty()) {
-        return buffer_.front().back() == '\n';
+    if (!buffer_.empty() && !buffer_.back().empty()) {
+        return buffer_.back().back() == '\n';
     } else {
         return true;
     }

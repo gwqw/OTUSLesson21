@@ -4,9 +4,7 @@
 
 using namespace std;
 
-#ifdef TEST
-int CmdFileHandler::counter_ = 0;
-#endif
+std::atomic<int> CmdFileHandler::counter_ = 0;
 
 void CmdStreamHandler::update(BulkCmdHolder bulk) {
     out_ << "bulk: ";
@@ -31,8 +29,6 @@ void CmdFileHandler::update(BulkCmdHolder bulk) {
 
 std::string CmdFileHandler::getFileName(const BulkCmd& bulk) {
     return "bulk" + to_string(bulk.time_)
-#ifdef TEST
         + "_" + to_string(counter_++)
-#endif
         + ".log";
 }

@@ -5,11 +5,10 @@
     Command handler interface and its implementations
 */
 
-#define TEST_
-
 #include <iostream>
 #include <string>
 #include <memory>
+#include <atomic>
 
 #include "bulk.h"
 
@@ -52,9 +51,7 @@ public:
     void update(BulkCmdHolder bulk) override;
 private:
     static std::string getFileName(const BulkCmd& bulk);
-#ifdef TEST
-    static int counter_;
-#endif
+    static std::atomic<int> counter_;
 };
 
 template <typename T, typename ... Args>

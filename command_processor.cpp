@@ -15,6 +15,7 @@ void process_all_commands(ICmdReader* cmdReader, BulkCmdManager* bulkMgr) {
 
 void CommandProcessor::pushToBuffer(const char *data, std::size_t data_size) {
     string_view sv(data, data_size);
+    auto& buffer = cmdReader_->getBuffer();
     while (!sv.empty()) {
         auto pos = sv.find('\n');
 
@@ -22,10 +23,14 @@ void CommandProcessor::pushToBuffer(const char *data, std::size_t data_size) {
             ++pos;
         }
         if (cmdReader_->isCmdComplete()) {
-            buffer_.emplace_back(sv.substr(0, pos));
+            buffer.emplace_back(sv.substr(0, pos));
         } else {
-            buffer_.back() += string(sv.substr(0, pos));
+            buffer.back() += string(sv.substr(0, pos));
         }
-        sv.remove_prefix(pos);
+        if (pos != std::string_view::npos) {
+            sv.remove_prefix(pos);
+        } else {
+            sv.remove_prefix(sv.size());
+        }
     }
 }

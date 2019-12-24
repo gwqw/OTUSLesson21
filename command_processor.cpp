@@ -15,7 +15,7 @@ void process_all_commands(ICmdReader* cmdReader, BulkCmdManager* bulkMgr) {
 
 void CommandProcessor::pushToBuffer(const char *data, std::size_t data_size) {
     string_view sv(data, data_size);
-    auto& buffer = cmdReader_->getBuffer();
+    auto& buffer = *buffer_;
     while (!sv.empty()) {
         auto pos = sv.find('\n');
 

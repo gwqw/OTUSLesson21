@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <utility>
+#include <list>
 
 #include "bulk.h"
 #include "command_handler.h"
@@ -11,19 +12,18 @@ using namespace std;
 
 namespace async {
 
-static vector<CommandProcessor> bulkmgrs;
+static list<unique_ptr<CommandProcessor>> bulkmgrs;
 
 handle_t connect(std::size_t bulk_size) {
-    auto cmdProc = CommandProcessor(bulk_size);
-    createObserverAndSubscribe<CmdStreamHandler>(cmdProc.getBulkMgr().get());
-    createObserverAndSubscribe<CmdFileHandler>(cmdProc.getBulkMgr().get());
-    bulkmgrs.emplace_back(move(cmdProc));
-    return reinterpret_cast<void*>(bulkmgrs.size()-1);
+    auto cmdProc = make_unique<CommandProcessor>(bulk_size);
+    createObserverAndSubscribe<CmdStreamHandler>(cmdProc->getBulkMgr().get());
+    createObserverAndSubscribe<CmdFileHandler>(cmdProc->getBulkMgr().get());
+    bulkmgrs.push_back(move(cmdProc));
+    return reinterpret_cast<void*>(bulkmgrs.back().get());
 }
 
 void receive(handle_t handle, const char *data, std::size_t size) {
-    auto idx = reinterpret_cast<size_t>(handle);
-    auto& dataProcessor = bulkmgrs[idx];
+    auto& dataProcessor = *reinterpret_cast<CommandProcessor*>(handle);
     auto& cmdReader = dataProcessor.getcmdReader();
     auto& bulkMgr = dataProcessor.getBulkMgr();
     dataProcessor.pushToBuffer(data, size);
@@ -36,8 +36,7 @@ void receive(handle_t handle, const char *data, std::size_t size) {
 }
 
 void disconnect(handle_t handle) {
-    auto idx = reinterpret_cast<size_t>(handle);
-    auto& dataProcessor = bulkmgrs[idx];
+    auto& dataProcessor = *reinterpret_cast<CommandProcessor*>(handle);
     auto& buffer = dataProcessor.getBuffer();
     auto& cmdReader = dataProcessor.getcmdReader();
     auto& bulkMgr = dataProcessor.getBulkMgr();

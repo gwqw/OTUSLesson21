@@ -28,27 +28,26 @@ bool StreamCmdReader::hasCmd() {
     return static_cast<bool>(in_);
 }
 
+// QueueReader2
 Command QueueReader::read_next_cmd() {
-    auto cmd_line = move(buffer_.front());
+    auto cmd_line = move(buffer_->front());
     if (!cmd_line.empty() && cmd_line.back() == '\n') {
         cmd_line.pop_back();
     }
     auto cmd = getCmd(move(cmd_line));
-    buffer_.pop_front();
+    buffer_->pop_front();
     return cmd;
 }
 
 bool QueueReader::hasCmd() {
-    return !buffer_.empty() && !buffer_.front().empty()
-           && buffer_.front().back() == '\n';
+    return !buffer_->empty() && !buffer_->front().empty()
+           && buffer_->front().back() == '\n';
 }
 
 bool QueueReader::isCmdComplete() {
-    if (!buffer_.empty() && !buffer_.back().empty()) {
-        return buffer_.back().back() == '\n';
+    if (!buffer_->empty() && !buffer_->back().empty()) {
+        return buffer_->back().back() == '\n';
     } else {
         return true;
     }
 }
-
-

@@ -3,6 +3,7 @@
 #include <deque>
 #include <utility>
 #include <string>
+#include <mutex>
 
 #include "bulk.h"
 #include "command_reader.h"
@@ -21,10 +22,12 @@ public:
     std::deque<std::string>& getBuffer() {return *buffer_;}
     ICmdReader& getcmdReader() {return *cmdReader_;}
     BulkMgrHolder& getBulkMgr() {return bulkMgr_;}
+    std::mutex& getMutex() {return mtx_;}
 private:
     std::unique_ptr<std::deque<std::string>> buffer_;
     std::unique_ptr<ICmdReader> cmdReader_;
     BulkMgrHolder bulkMgr_;
+    std::mutex mtx_;
 };
 
 void process_all_commands(ICmdReader& cmdReader, BulkCmdManager& bulkMgr);

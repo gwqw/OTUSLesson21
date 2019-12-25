@@ -27,10 +27,6 @@ void CommandProcessor::pushToBuffer(const char *data, std::size_t data_size) {
         } else {
             buffer.back() += string(sv.substr(0, pos));
         }
-        if (pos != std::string_view::npos) {
-            sv.remove_prefix(pos);
-        } else {
-            sv.remove_prefix(sv.size());
-        }
+        sv.remove_prefix(min(pos, sv.size()));
     }
 }

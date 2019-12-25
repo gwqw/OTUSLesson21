@@ -1,23 +1,27 @@
 #include "command_handler.h"
 
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
 std::atomic<int> CmdFileHandler::counter_ = 0;
 
 void CmdStreamHandler::update(BulkCmdHolder bulk) {
-    out_ << "bulk: ";
+    stringstream buf;
+    buf << "bulk: ";
     bool is_first = true;
     for (const auto& c : bulk->data_) {
         if (is_first) {
             is_first = false;
         } else {
-            out_ << ", ";
+            buf << ", ";
         }
-        out_ << c.data;
+        buf << c.data;
     }
-    out_ << std::endl;
+    buf << '\n';
+    out_ << buf.str();
+    out_.flush();
 }
 
 void CmdFileHandler::update(BulkCmdHolder bulk) {

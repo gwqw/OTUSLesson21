@@ -12,8 +12,7 @@ using namespace std;
 
 namespace async {
 
-ThreadSafeUnorderedMap<unique_ptr<CommandProcessor>> bulkmgrs;
-mutex mtx;
+static ThreadSafeUnorderedMap<unique_ptr<CommandProcessor>> bulkmgrs;
 
 handle_t connect(std::size_t bulk_size) {
     auto dataProcessor = make_unique<CommandProcessor>(bulk_size);
@@ -29,6 +28,7 @@ void receive(handle_t handle, const char *data, std::size_t size) {
     auto& dataProcessor = *bulkmgrs[idx];
     auto& cmdReader = dataProcessor.getcmdReader();
     auto& bulkMgr = dataProcessor.getBulkMgr();
+    auto& mtx = dataProcessor.getMutex();
     lock_guard<mutex> lk(mtx);
     dataProcessor.pushToBuffer(data, size);
     process_all_commands(cmdReader, *bulkMgr);
@@ -40,6 +40,7 @@ void disconnect(handle_t handle) {
     auto& buffer = dataProcessor.getBuffer();
     auto& cmdReader = dataProcessor.getcmdReader();
     auto& bulkMgr = dataProcessor.getBulkMgr();
+    auto& mtx = dataProcessor.getMutex();
     {
         lock_guard<mutex> lk(mtx);
         if (!buffer.empty()) {

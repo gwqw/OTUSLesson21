@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         in.emplace_back("a\n");
         process_all_commands(*commandReader, *bulkMgr);
         string res = "bulk: 1, 2, 3, 4, 5\nbulk: 6\n";
-        BOOST_TEST(out.str() == res);
+        BOOST_CHECK(out.str() == res);
         out.str("");
 
         //third recieve
@@ -305,7 +305,43 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         process_all_commands(*commandReader, *bulkMgr);
         bulkMgr->add_cmd(Command{CommandType::Terminator});
         res = "bulk: a, b, c, d\nbulk: 89\n";
-        BOOST_TEST(out.str() == res);
+        BOOST_CHECK(out.str() == res);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_6_terminate_wo_end) {
+        constexpr int N = 5;
+
+        deque<string> in {"1\n", "2\n", "3\n", "4"};
+        stringstream out;
+        auto bulkMgr = make_unique<BulkCmdManager>(N);
+        auto commandReader = make_unique<QueueReader>(&in);
+        createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
+        process_all_commands(*commandReader, *bulkMgr);
+        if (!in.empty()) {
+            auto cmd = commandReader->read_next_cmd();
+            bulkMgr->add_cmd(move(cmd));
+        }
+        bulkMgr->add_cmd(Command{CommandType::Terminator});
+        string res = "bulk: 1, 2, 3, 4\n";
+        BOOST_CHECK(out.str() == res);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_7_caught_in_the_middle) {
+        constexpr int N = 3;
+
+        deque<string> in {"cmd1\n", "cmd"};
+        stringstream out;
+        auto bulkMgr = make_unique<BulkCmdManager>(N);
+        auto commandReader = make_unique<QueueReader>(&in);
+        createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
+        process_all_commands(*commandReader, *bulkMgr);
+        BOOST_CHECK(out.str().empty());
+
+        in.back() += "2\n";
+        in.emplace_back("cmd3\n");
+        process_all_commands(*commandReader, *bulkMgr);
+        string res = "bulk: cmd1, cmd2, cmd3\n";
+        BOOST_CHECK(out.str() == res);
     }
 
 BOOST_AUTO_TEST_SUITE_END()

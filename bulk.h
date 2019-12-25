@@ -12,6 +12,9 @@
 #include <memory>
 
 #include "command.h"
+#include "thread_pool.h"
+
+#define MULTI_THREAD
 
 /// Bulk of commands
 struct BulkCmd {
@@ -57,14 +60,19 @@ public:
     void subscribe(ObserverHolder obs);
     void add_cmd(Command cmd);
 private:
+    static constexpr std::size_t THREADS_NUM = 2;
     std::size_t bulk_capacity_ = 0;
     int nesting_counter_ = 0;
     std::vector<ObserverHolder> subs_;
     BulkCmd cur_bulk_;
     std::unique_ptr<BulkStateHandler> bulk_handler_ = nullptr;
+#ifdef MULTI_THREAD
+    ThreadPool cout_tread_pool_;
+    ThreadPool file_tread_pool_;
+#endif
     // methods
     void flush_data();
-    void notify(BulkCmdHolder bulk_cmd) const;
+    void notify(BulkCmdHolder bulk_cmd);
 };
 using BulkMgrHolder = std::unique_ptr<BulkCmdManager>;
 
@@ -87,4 +95,3 @@ class CustomStateHandler : public BulkStateHandler {
 public:
     void handle_cmd(BulkCmdManager* m, Command cmd) override;
 };
-

@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sstream>
+#include <chrono>
 
 #include "bulk.h"
 #include "command_reader.h"
@@ -9,6 +10,7 @@
 #include "command_processor.h"
 
 using namespace std;
+using namespace std::chrono_literals;
 
 BOOST_AUTO_TEST_SUITE(first_bulk_test_suite)
 
@@ -276,8 +278,8 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         // first receive
         deque<string> in {"1"};
         stringstream out;
-        auto bulkMgr = make_unique<BulkCmdManager>(N);
         auto commandReader = make_unique<QueueReader>(&in);
+        auto bulkMgr = make_unique<BulkCmdManager>(N);
         createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
         process_all_commands(*commandReader, *bulkMgr);
         BOOST_CHECK(out.str().empty());
@@ -292,8 +294,9 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         in.emplace_back("{\n");
         in.emplace_back("a\n");
         process_all_commands(*commandReader, *bulkMgr);
+        std::this_thread::sleep_for(100ms);
         string res = "bulk: 1, 2, 3, 4, 5\nbulk: 6\n";
-        BOOST_CHECK(out.str() == res);
+        BOOST_TEST(out.str() == res);
         out.str("");
 
         //third recieve
@@ -304,8 +307,9 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         in.emplace_back("89\n");
         process_all_commands(*commandReader, *bulkMgr);
         bulkMgr->add_cmd(Command{CommandType::Terminator});
+        std::this_thread::sleep_for(100ms);
         res = "bulk: a, b, c, d\nbulk: 89\n";
-        BOOST_CHECK(out.str() == res);
+        BOOST_TEST(out.str() == res);
     }
 
     BOOST_AUTO_TEST_CASE(test_6_terminate_wo_end) {
@@ -322,6 +326,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
             bulkMgr->add_cmd(move(cmd));
         }
         bulkMgr->add_cmd(Command{CommandType::Terminator});
+        std::this_thread::sleep_for(100ms);
         string res = "bulk: 1, 2, 3, 4\n";
         BOOST_CHECK(out.str() == res);
     }
@@ -335,11 +340,13 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         auto commandReader = make_unique<QueueReader>(&in);
         createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
         process_all_commands(*commandReader, *bulkMgr);
+        std::this_thread::sleep_for(100ms);
         BOOST_CHECK(out.str().empty());
 
         in.back() += "2\n";
         in.emplace_back("cmd3\n");
         process_all_commands(*commandReader, *bulkMgr);
+        std::this_thread::sleep_for(100ms);
         string res = "bulk: cmd1, cmd2, cmd3\n";
         BOOST_CHECK(out.str() == res);
     }

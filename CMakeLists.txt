@@ -13,15 +13,16 @@ set(USE_TEST ON)
 if (USE_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 endif()
+find_package(Threads REQUIRED)
 
 # source
-set(SOURCE
-        bulk.cpp bulk.h
-        command_reader.cpp command_reader.h
-        command_handler.cpp command_handler.h
-        command_processor.cpp command_processor.h
-        command.h
-        ts_cont.h)
+set(SOURCE bulk.cpp bulk.h
+    command_reader.cpp command_reader.h
+    command_handler.cpp command_handler.h
+    command_processor.cpp command_processor.h
+    command.h
+    ts_cont.h
+    thread_pool.cpp thread_pool.h)
 set(LIB_SOURCE async.cpp async.h ${SOURCE})
 set(EXE_SOURCE main.cpp ${SOURCE})
 if (USE_TEST)
@@ -42,7 +43,7 @@ endif()
 
 # compiler options
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  set(CMP_OPTIONS "-Wall;-Wextra;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Wcast-align;-Wunused;-Woverloaded-virtual;-Wconversion;-Wsign-conversion;-Wduplicated-cond")
+  set(CMP_OPTIONS "-pthread;-Wall;-Wextra;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Wcast-align;-Wunused;-Woverloaded-virtual;-Wconversion;-Wsign-conversion")
   if(CMAKE_BUILD_TYPE MATCHES Debug)
       set(CMP_OPTIONS ${CMP_OPTIONS}";-D_GLIBCXX_DEBUG;-D_GLIBCXX_DEBUG_PEDANTIC")
       message("debug")
@@ -72,14 +73,18 @@ endif()
 
 # target linking
 target_link_libraries(${EXE_NAME} ${LIB_NAME})
+target_link_libraries(${LIB_NAME} Threads::Threads)
 if (USE_TEST)
     target_link_libraries(${TEST_NAME}
         ${Boost_LIBRARIES}
     )
+    target_link_libraries(${TEST_NAME}
+        Threads::Threads
+    )
 endif()
 
 # installation
-install(TARGETS ${LIB_NAME} RUNTIME DESTINATION bin)
+install(TARGETS ${LIB_NAME} LIBRARY DESTINATION lib)
 
 set(CPACK_GENERATOR DEB)
 

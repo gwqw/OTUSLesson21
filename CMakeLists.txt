@@ -20,7 +20,8 @@ set(SOURCE
         command_reader.cpp command_reader.h
         command_handler.cpp command_handler.h
         command_processor.cpp command_processor.h
-        command.h)
+        command.h
+        ts_cont.h)
 set(LIB_SOURCE async.cpp async.h ${SOURCE})
 set(EXE_SOURCE main.cpp ${SOURCE})
 if (USE_TEST)

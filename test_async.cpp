@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         process_all_commands(*commandReader, *bulkMgr);
         std::this_thread::sleep_for(100ms);
         string res = "bulk: 1, 2, 3, 4, 5\nbulk: 6\n";
-        BOOST_TEST(out.str() == res);
+        BOOST_CHECK(out.str() == res);
         out.str("");
 
         //third recieve
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         bulkMgr->add_cmd(Command{CommandType::Terminator});
         std::this_thread::sleep_for(100ms);
         res = "bulk: a, b, c, d\nbulk: 89\n";
-        BOOST_TEST(out.str() == res);
+        BOOST_CHECK(out.str() == res);
     }
 
     BOOST_AUTO_TEST_CASE(test_6_terminate_wo_end) {

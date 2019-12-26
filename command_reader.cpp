@@ -31,12 +31,11 @@ bool StreamCmdReader::hasCmd() {
 // QueueReader2
 Command QueueReader::read_next_cmd() {
     auto cmd_line = move(buffer_->front());
+    buffer_->pop_front();
     if (!cmd_line.empty() && cmd_line.back() == '\n') {
         cmd_line.pop_back();
     }
-    auto cmd = getCmd(move(cmd_line));
-    buffer_->pop_front();
-    return cmd;
+    return getCmd(move(cmd_line));
 }
 
 bool QueueReader::hasCmd() {

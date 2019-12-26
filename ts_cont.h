@@ -10,6 +10,9 @@ public:
     T& operator[](std::size_t idx);
     const T& operator[](std::size_t idx) const;
     void erase(std::size_t idx);
+    [[nodiscard]] bool contains(std::size_t key) const {
+        return data_.count(key) > 0;
+    }
 private:
     std::unordered_map<std::size_t, T> data_;
     std::size_t max_idx_ = 0;

@@ -45,15 +45,14 @@ private:
 
 class QueueReader : public ICmdReader {
 public:
-    explicit QueueReader(std::deque<std::string>* buffer)
+    explicit QueueReader(std::deque<std::string>& buffer)
         : buffer_(buffer)
     {}
     Command read_next_cmd() override;
     bool hasCmd() override;
     bool isCmdComplete() override;
 private:
-    std::deque<std::string>* buffer_;
-    //std::shared_ptr<std::deque<std::string>> buffer_;
+    std::deque<std::string>& buffer_;
 };
 
 

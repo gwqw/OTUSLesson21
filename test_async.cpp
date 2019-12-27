@@ -158,42 +158,42 @@ BOOST_AUTO_TEST_SUITE(queue_cmd_reader_test_suite)
     BOOST_AUTO_TEST_CASE(test_Base) {
         {
             deque<string> in {"cmd1\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data == "cmd1");
         }
         {
             deque<string> in {"cmd1 cmd2\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data == "cmd1 cmd2");
         }
         {
             deque<string> in {"\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data.empty());
         }
         {
             deque<string> in {"cmd{\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data == "cmd{");
         }
         {
             deque<string> in {"cmd}\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data == "cmd}");
         }
         {
             deque<string> in {"cmd1\n", "cmd2\n"};
-            QueueReader commandReader(&in);
+            QueueReader commandReader(in);
             auto cmd = commandReader.read_next_cmd();
             BOOST_CHECK(cmd.cmd_type == CommandType::Base);
             BOOST_CHECK(cmd.data == "cmd1");
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         stringstream out;
         {
             auto bulkMgr = make_unique<BulkCmdManager>(N);
-            auto commandReader = make_unique<QueueReader>(&in);
+            auto commandReader = make_unique<QueueReader>(in);
 
             createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
             process_all_commands(*commandReader, *bulkMgr);
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         stringstream out;
         {
             auto bulkMgr = make_unique<BulkCmdManager>(N);
-            auto commandReader = make_unique<QueueReader>(&in);
+            auto commandReader = make_unique<QueueReader>(in);
             createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
 
             // start commands cycle
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         stringstream out;
         {
             auto bulkMgr = make_unique<BulkCmdManager>(N);
-            auto commandReader = make_unique<QueueReader>(&in);
+            auto commandReader = make_unique<QueueReader>(in);
             createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
 
             // start commands cycle
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         stringstream out;
         {
             auto bulkMgr = make_unique<BulkCmdManager>(N);
-            auto commandReader = make_unique<QueueReader>(&in);
+            auto commandReader = make_unique<QueueReader>(in);
             createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
 
             // start commands cycle
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         // first receive
         deque<string> in {"1"};
         stringstream out;
-        auto commandReader = make_unique<QueueReader>(&in);
+        auto commandReader = make_unique<QueueReader>(in);
         auto bulkMgr = make_unique<BulkCmdManager>(N);
         createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
         process_all_commands(*commandReader, *bulkMgr);
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         deque<string> in {"1\n", "2\n", "3\n", "4"};
         stringstream out;
         auto bulkMgr = make_unique<BulkCmdManager>(N);
-        auto commandReader = make_unique<QueueReader>(&in);
+        auto commandReader = make_unique<QueueReader>(in);
         createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
         process_all_commands(*commandReader, *bulkMgr);
         if (!in.empty()) {
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_SUITE(async_bulk_test_suite)
         deque<string> in {"cmd1\n", "cmd"};
         stringstream out;
         auto bulkMgr = make_unique<BulkCmdManager>(N);
-        auto commandReader = make_unique<QueueReader>(&in);
+        auto commandReader = make_unique<QueueReader>(in);
         createObserverAndSubscribe<CmdStreamHandler>(bulkMgr.get(), out);
         process_all_commands(*commandReader, *bulkMgr);
         std::this_thread::sleep_for(100ms);

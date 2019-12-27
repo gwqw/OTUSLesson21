@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 //        auto h = async::connect(bulk_size);
 //        async::receive(h, "1", 1);
 //        async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);
-//        std::this_thread::sleep_for(1ms);
+//        //std::this_thread::sleep_for(1ms);
 //        async::receive(h, "b\nc\nd\n}\n89\n", 11);
 //        async::disconnect(h);
 //    };
@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
 //    return 0;
 //}
 
+/*3 threads for receive*/
 //int main(int argc, char* argv[]) {
 //    const std::size_t bulk_size = 5;
 //    auto h = async::connect(bulk_size);

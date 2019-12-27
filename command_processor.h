@@ -11,20 +11,19 @@
 class CommandProcessor {
 public:
     explicit CommandProcessor(std::size_t bulk_size)
-    :   buffer_(std::make_unique<std::deque<std::string>>()),
-        cmdReader_(std::make_unique<QueueReader>(buffer_.get())),
+    :   cmdReader_(std::make_unique<QueueReader>(buffer_)),
         bulkMgr_(std::make_unique<BulkCmdManager>(bulk_size))
     {}
 
     void pushToBuffer(const char* data, std::size_t data_size);
 
     // getters
-    std::deque<std::string>& getBuffer() {return *buffer_;}
+    std::deque<std::string>& getBuffer() {return buffer_;}
     ICmdReader& getcmdReader() {return *cmdReader_;}
     BulkMgrHolder& getBulkMgr() {return bulkMgr_;}
     std::mutex& getMutex() {return mtx_;}
 private:
-    std::unique_ptr<std::deque<std::string>> buffer_;
+    std::deque<std::string> buffer_;
     std::unique_ptr<ICmdReader> cmdReader_;
     BulkMgrHolder bulkMgr_;
     std::mutex mtx_;

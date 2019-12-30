@@ -26,7 +26,9 @@ struct BulkCmd {
     {}
     [[nodiscard]] bool empty() const {return data_.empty();}
     void clear() {data_.clear();}
+    [[nodiscard]] const std::deque<Command>& getData() const {return data_;}
 };
+
 /// Command bulk holder
 using BulkCmdHolder = std::shared_ptr<BulkCmd>;
 

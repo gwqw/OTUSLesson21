@@ -43,9 +43,10 @@ endif()
 
 # compiler options
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  set(CMP_OPTIONS "-pthread;-Wall;-Wextra;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Wcast-align;-Wunused;-Woverloaded-virtual;-Wconversion;-Wsign-conversion")
+  set(CMP_OPTIONS "-pthread;-Wall;-Wextra")
   if(CMAKE_BUILD_TYPE MATCHES Debug)
-      set(CMP_OPTIONS ${CMP_OPTIONS}";-D_GLIBCXX_DEBUG;-D_GLIBCXX_DEBUG_PEDANTIC")
+      set(CMP_OPTIONS ${CMP_OPTIONS}";-g")
+      set(CMP_OPTIONS ${CMP_OPTIONS}";-fsanitize=thread")
       message("debug")
   endif()
 else()
@@ -57,6 +58,7 @@ set_target_properties(${LIB_NAME} ${EXE_NAME} ${TEST_NAME} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS ${CMP_OPTIONS}
+    LINK_OPTIONS "-fsanitize=thread"
 )
 
 # add boost headers for test

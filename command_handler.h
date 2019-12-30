@@ -19,7 +19,7 @@
  */
 class IObserver {
 public:
-    virtual void update(BulkCmdHolder bulk) = 0;
+    virtual void update(BulkCmdHolder bulk_holder) = 0;
     virtual ~IObserver() = default;
 };
 
@@ -35,7 +35,7 @@ public:
     explicit CmdStreamHandler(std::ostream& out = std::cout)
         : out_(out) {}
 
-    void update(BulkCmdHolder bulk) override;
+    void update(BulkCmdHolder bulk_holder) override;
 private:
     std::ostream& out_;
 };
@@ -48,7 +48,7 @@ private:
  */
 class CmdFileHandler : public IObserver {
 public:
-    void update(BulkCmdHolder bulk) override;
+    void update(BulkCmdHolder bulk_holder) override;
 private:
     static std::string getFileName(const BulkCmd& bulk);
     static std::atomic<int> counter_;

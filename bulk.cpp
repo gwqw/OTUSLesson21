@@ -35,9 +35,8 @@ void BulkCmdManager::notify(BulkCmdHolder bulk_cmd) {
 #ifdef MULTI_THREAD
     try {
         auto update_func = [](const shared_ptr<IObserver>& subscriber,
-                              const shared_ptr<BulkCmd>& cmd) {
-            subscriber->update(cmd);
-            return cmd->data_.size();
+                              BulkCmdHolder cmd) {
+            subscriber->update(move(cmd));
         };
 
         // console output

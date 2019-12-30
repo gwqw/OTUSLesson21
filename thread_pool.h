@@ -11,7 +11,7 @@
 #include <utility>
 
 class ThreadPool {
-using Task = std::future<std::size_t>;
+using Task = std::future<void>;
 public:
     explicit ThreadPool(std::size_t threads_num);
     ~ThreadPool();

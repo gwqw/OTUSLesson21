@@ -10,24 +10,24 @@
 using namespace std::chrono_literals;
 
 /*simplest test*/
-//int main(int argc, char* argv[]) {
-//    const std::size_t bulk_size = 1;
-//    auto h = async::connect(bulk_size);
-//    async::receive(h, "1\n", 2);
-//    async::disconnect(h);
-//    return 0;
-//}
-
-/*also simple test*/
 int main(int argc, char* argv[]) {
-    const std::size_t bulk_size = 5;
+    const std::size_t bulk_size = 1;
     auto h = async::connect(bulk_size);
-    async::receive(h, "1", 1);
-    async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);
-    async::receive(h, "b\nc\nd\n}\n89\n", 11);
+    async::receive(h, "1\n", 2);
     async::disconnect(h);
     return 0;
 }
+
+/*also simple test*/
+//int main(int argc, char* argv[]) {
+//    const std::size_t bulk_size = 5;
+//    auto h = async::connect(bulk_size);
+//    async::receive(h, "1", 1);
+//    async::receive(h, "\n2\n3\n4\n5\n6\n{\na\n", 15);
+//    async::receive(h, "b\nc\nd\n}\n89\n", 11);
+//    async::disconnect(h);
+//    return 0;
+//}
 
 
 /*simple test*/
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
 // n parallel threads
 //int main(int argc, char* argv[]) {
 //    constexpr std::size_t bulk_size = 5;
-//    constexpr int N = 20; // жестить, так по полной
+//    constexpr int N = 20;
 //    auto l = [](){
 //        auto h = async::connect(bulk_size);
 ////        std::this_thread::sleep_for(1ms);

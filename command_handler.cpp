@@ -11,10 +11,9 @@ std::atomic<int> CmdFileHandler::counter_ = 0;
 
 void CmdStreamHandler::update(BulkCmdHolder bulk_holder) {
     stringstream buf;
-    const auto& bulk = *bulk_holder;
     buf << "bulk: ";
     bool is_first = true;
-    for (const auto& c : bulk.getData()) {
+    for (const auto& c : bulk_holder->getData()) {
         if (is_first) {
             is_first = false;
         } else {

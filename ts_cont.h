@@ -11,12 +11,13 @@ public:
     const T& operator[](std::size_t idx) const;
     void erase(std::size_t idx);
     [[nodiscard]] bool contains(std::size_t key) const {
+        std::shared_lock<std::shared_mutex> lk(data_mtx_);
         return data_.count(key) > 0;
     }
 private:
     std::unordered_map<std::size_t, T> data_;
     std::size_t max_idx_ = 0;
-    std::shared_mutex data_mtx_;
+    mutable std::shared_mutex data_mtx_;
 };
 
 template<typename T>
